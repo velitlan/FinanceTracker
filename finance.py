@@ -5,7 +5,7 @@ def load_transactions(filepath: str) -> pd.DataFrame:
 
 def analyze_transactions(df: pd.DataFrame) -> tuple[pd.DataFrame, str]:
     df['Betrag'] = pd.to_numeric(df['Betrag'], errors='coerce').fillna(0)
-    
+
     monthly_summary = df.pivot_table(
         index='Monat',
         columns='Kategorie',
@@ -14,11 +14,9 @@ def analyze_transactions(df: pd.DataFrame) -> tuple[pd.DataFrame, str]:
         fill_value=0
     )
 
-    totals = df.groupby('Kategorie')['Betrag'].sum()
-    income = totals.get('Einnahme', 0)
-    expenses = totals.get('Ausgabe', 0)
+    totals = df['Betrag'].groupby(df['Kategorie']).sum()
+    net = totals.get('Einnahme', 0) - totals.get('Ausgabe', 0)
 
-    net = income - expenses
     advice = (
         f"Du hast einen Überschuss von {net:.2f}€. Gut gemacht!"
         if net > 0
