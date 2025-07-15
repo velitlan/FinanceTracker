@@ -1,18 +1,27 @@
 import os
+import sys
 import pandas as pd
 from finance import analyze_transactions, load_transactions
 from visualization import plot_summary
 
 DATA_FILE = "data.csv"
 
-def main():
+def main() -> None:
     print(f"Arbeitsverzeichnis: {os.getcwd()}")
-    print("Willkommen zur Finanzanalyse-App!")
+    print("Willkommen zur Finanzanalyse-App!\n")
 
-    transactions = load_transactions(DATA_FILE)
+    try:
+        transactions = load_transactions(DATA_FILE)
+    except FileNotFoundError:
+        print(f"Fehler: Datei '{DATA_FILE}' wurde nicht gefunden.")
+        sys.exit(1)
+    except pd.errors.ParserError:
+        print(f"Fehler: Datei '{DATA_FILE}' konnte nicht als CSV gelesen werden.")
+        sys.exit(1)
+
     summary, savings_advice = analyze_transactions(transactions)
 
-    print("\n--- Finanzübersicht ---")
+    print("--- Finanzübersicht ---")
     print(summary)
 
     print("\n--- Spar-Tipp ---")
